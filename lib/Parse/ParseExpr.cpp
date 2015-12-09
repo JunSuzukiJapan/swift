@@ -1231,7 +1231,7 @@ ParserResult<Expr> Parser::parseExprPostfix(Diag<> ID, bool isExprBasic) {
 
       // We only allow a single trailing closure on a call.  This could be
       // generalized in the future, but needs further design.
-      if (Tok.is(tok::l_brace)) break;
+      //if (Tok.is(tok::l_brace)) break;
       continue;
     }
 
@@ -1528,7 +1528,8 @@ parseClosureSignatureIfPresent(SmallVectorImpl<CaptureListEntry> &captureList,
 
   // If we have a leading token that may be part of the closure signature, do a
   // speculative parse to validate it and look for 'in'.
-  if (Tok.isAny(tok::l_paren, tok::l_square, tok::identifier, tok::kw__)) {
+  //if (Tok.isAny(tok::l_paren, tok::l_square, tok::identifier, tok::kw__)) {
+  if (Tok.isAny(tok::l_paren, tok::l_square, tok::identifier, tok::kw__, tok::l_brace)) {
     BacktrackingScope backtrack(*this);
 
     // Skip by a closure capture list if present.
@@ -1553,6 +1554,22 @@ parseClosureSignatureIfPresent(SmallVectorImpl<CaptureListEntry> &captureList,
           if (!canParseType())
             return false;
         }
+      }
+
+    } else if (consumeIf(tok::l_brace)){  // Consume the '{'
+
+      // While we don't have '->' or ')', eat balanced tokens.
+      while (!Tok.is(tok::r_brace) && !Tok.is(tok::eof))
+        skipSingle();
+
+      // Consume the ')', if it's there.
+      if (consumeIf(tok::r_brace)) {
+        //consumeIf(tok::kw_throws) || consumeIf(tok::kw_rethrows);
+        // Parse the func-signature-result, if present.
+        //if (consumeIf(tok::arrow)) {
+        //  if (!canParseType())
+        //    return false;
+        //}
       }
 
       // Okay, we have a closure signature.

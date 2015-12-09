@@ -199,6 +199,12 @@ public:
   bool isFollowingLParen() const {
     return !isAtStartOfLine() && Kind == tok::l_paren;
   }
+
+  /// True if the token is an l_paren token that does not start a new line.
+  bool isFollowingLBrace() const {
+    return !isAtStartOfLine() && Kind == tok::l_brace;
+  }
+
   
   /// True if the token is an l_square token that does not start a new line.
   bool isFollowingLSquare() const {
